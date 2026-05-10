@@ -24,7 +24,7 @@ export interface Pedido {
 })
 export class PedidoService {
 
-  private apiUrl = '/api/pedidos';
+  private apiUrl = 'formulariokatodobackend-production.up.railway.app';
 
   constructor(private http: HttpClient) { }
 
