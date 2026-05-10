@@ -1,0 +1,41 @@
+<div class="estado-wrapper">
+
+  <button class="btn-volver" (click)="volver()">← Inicio</button>
+
+  <h2>Estado de tu pedido</h2>
+  <p>Introduce tu email para ver el estado de tus pedidos.</p>
+
+  <div class="buscador">
+    <input type="email" [(ngModel)]="email" placeholder="tu@email.com" (keyup.enter)="buscar()">
+    <input type="text" [(ngModel)]="codigo" placeholder="Código de 6 dígitos" maxlength="6" (keyup.enter)="buscar()">
+    <button (click)="buscar()" [disabled]="cargando || !email || !codigo">
+      {{ cargando ? 'Buscando...' : 'Buscar' }}
+    </button>
+  </div>
+
+  <div *ngIf="errorCodigo" class="sin-pedidos">
+    Email o código incorrectos.
+  </div>
+
+  <div *ngIf="buscado && pedidos.length === 0" class="sin-pedidos">
+    No encontramos pedidos con ese email.
+  </div>
+
+  <div *ngIf="pedidos.length > 0" class="pedidos-lista">
+    <div *ngFor="let p of pedidos" class="pedido-card">
+      <div class="pedido-header">
+        <span class="pedido-id">#{{ p.id }}</span>
+        <span [class]="'badge estado-' + (p.estado || '').toLowerCase().replace(' ', '-')">
+          {{ p.estado }}
+        </span>
+      </div>
+      <div class="pedido-info">
+        <p><strong>Accesorio:</strong> {{ p.tipoAccesorio }}{{ p.otroAccesorio ? ' ('+p.otroAccesorio+')' : '' }}</p>
+        <p><strong>Presupuesto:</strong> {{ p.presupuesto }}</p>
+        <p><strong>Descripción:</strong> {{ p.descripcionFinal }}</p>
+        <p class="fecha">{{ p.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,189 @@
+.estado-wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 24px;
+  animation: fadeIn 0.4s ease both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+p {
+  font-size: 0.875rem;
+  color: var(--text2);
+  margin-bottom: 36px;
+}
+
+.buscador {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.buscador input {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 16px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 200px;
+  outline: none;
+  clip-path: polygon(10px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 10px);
+  transition: border-color 0.2s;
+}
+
+.buscador input:focus {
+  border-color: var(--orange);
+}
+
+.buscador button {
+  background: var(--orange);
+  border: none;
+  color: var(--bg);
+  padding: 12px 24px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  clip-path: polygon(10px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 10px);
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.buscador button:hover:not(:disabled) {
+  background: var(--orange2);
+  transform: translateY(-1px);
+}
+
+.buscador button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sin-pedidos {
+  font-size: 0.875rem;
+  color: var(--text2);
+}
+
+.pedidos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.pedido-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 20px;
+  clip-path: polygon(14px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 14px);
+  animation: fadeIn 0.3s ease both;
+  transition: border-color 0.2s;
+}
+
+.pedido-card:hover {
+  border-color: rgba(241, 137, 0, 0.3);
+}
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.pedido-id {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.5px;
+}
+
+.badge {
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  letter-spacing: 0.5px;
+  clip-path: polygon(6px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 6px);
+}
+
+.estado-recibido {
+  border-color: var(--text2);
+  color: var(--text2);
+}
+
+.estado-en-proceso {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.estado-listo {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.estado-entregado {
+  border-color: var(--border);
+  color: var(--text2);
+  opacity: 0.5;
+}
+
+.pedido-info p {
+  margin: 5px 0;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.fecha {
+  margin-top: 14px !important;
+  font-size: 0.75rem !important;
+  color: var(--text2) !important;
+}
+
+.btn-volver {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 9px 18px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 40px;
+  clip-path: polygon(10px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 10px);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-volver:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}

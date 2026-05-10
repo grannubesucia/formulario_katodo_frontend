@@ -1,0 +1,90 @@
+<div class="config-wrapper">
+
+  <!-- LOGIN -->
+  <div *ngIf="!autenticado" class="login-box">
+    <h2>Panel de administración</h2>
+    <p>Katodo Ciberjoyería</p>
+    <input type="password" [(ngModel)]="passwordInput" placeholder="Contraseña" (keyup.enter)="intentarLogin()">
+    <button (click)="intentarLogin()" [disabled]="cargandoLogin">
+      {{ cargandoLogin ? 'Verificando...' : 'Entrar' }}
+    </button>
+    <p *ngIf="errorLogin" class="error">Contraseña incorrecta</p>
+  </div>
+
+  <!-- PANEL -->
+  <div *ngIf="autenticado" class="panel">
+
+    <div class="panel-header">
+      <h2>Pedidos recibidos</h2>
+      <span class="total">{{ pedidosFiltrados.length }} pedidos</span>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filtros">
+      <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+        <option value="">Todos los estados</option>
+        <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+      </select>
+
+      <input type="text" [(ngModel)]="filtroEmail" (input)="aplicarFiltros()" placeholder="Filtrar por email">
+
+      <input type="text" [(ngModel)]="filtroAccesorio" (input)="aplicarFiltros()" placeholder="Tipo de accesorio">
+
+      <input type="date" [(ngModel)]="filtroFechaDesde" (change)="aplicarFiltros()">
+      <input type="date" [(ngModel)]="filtroFechaHasta" (change)="aplicarFiltros()">
+
+      <button (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+
+    <!-- TABLA -->
+    <div *ngIf="cargando">Cargando pedidos...</div>
+
+    <table *ngIf="!cargando">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Email</th>
+          <th>Accesorio</th>
+          <th>Presupuesto</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pedidosFiltrados">
+          <td>{{ p.id }}</td>
+          <td>{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
+          <td>{{ p.emailCliente }}</td>
+          <td>{{ p.tipoAccesorio }}{{ p.otroAccesorio ? ' ('+p.otroAccesorio+')' : '' }}</td>
+          <td>{{ p.presupuesto }}</td>
+          <td class="descripcion">{{ p.descripcionFinal }}</td>
+          <td>
+            <select [(ngModel)]="p.estado" (ngModelChange)="confirmarCambioEstado(p, $event)"
+              [class]="'estado-' + (p.estado || '').toLowerCase().replace(' ', '-')">
+              <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!cargando && pedidosFiltrados.length === 0">
+      No hay pedidos con esos filtros.
+    </p>
+
+    <!-- POPUP CONFIRMACIÓN -->
+    <div *ngIf="mostrarConfirmacion" class="popup-overlay">
+      <div class="popup-box">
+        <p>¿Cambiar el pedido <strong>#{{ pedidoSeleccionado?.id }}</strong> a <strong>{{ nuevoEstadoSeleccionado
+            }}</strong>?</p>
+        <p class="popup-hint">Se enviará un email al cliente.</p>
+        <div class="popup-btns">
+          <button class="btn-cancelar" (click)="cancelarCambio()">Cancelar</button>
+          <button class="btn-confirmar" (click)="confirmarCambio()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,369 @@
+<div class="formulario-shell">
+
+  <!-- BARRA DE PROGRESO -->
+  <nav class="progress-bar" *ngIf="!pedidoEnviado">
+    <div class="progress-track">
+      <div class="progress-fill" [style.width.%]="progreso"></div>
+    </div>
+    <div class="progress-steps">
+      <div *ngFor="let s of steps; let i = index" class="progress-step" [class.active]="i === currentStep"
+        [class.done]="i < currentStep" (click)="irAPaso(i)">
+        <div class="step-dot">
+          <span *ngIf="i < currentStep">✓</span>
+          <span *ngIf="i >= currentStep">{{ i + 1 }}</span>
+        </div>
+        <span class="step-label">{{ labelsPasos[s] }}</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <div class="formulario-content" *ngIf="!pedidoEnviado">
+
+    <!-- PASO: tipo -->
+    <div *ngIf="pasoActual === 'tipo'" class="paso">
+      <h2>¿Para quién es el pedido?</h2>
+      <div class="opciones-tipo">
+        <button class="opcion-card" (click)="datos.tipoPedido = 'propio'; siguiente()">
+          <span class="opcion-icon">🙋</span>
+          <span>Para mí</span>
+        </button>
+        <button class="opcion-card" (click)="datos.tipoPedido = 'otra'; siguiente()">
+          <span class="opcion-icon">🎁</span>
+          <span>Para otra persona</span>
+        </button>
+      </div>
+      <button class="btn-secundario" (click)="volverAlInicio()">Inicio</button>
+    </div>
+
+    <!-- PASO: descripcion -->
+    <div *ngIf="pasoActual === 'descripcion'" class="paso">
+      <h2>Describe a la persona</h2>
+      <p class="paso-hint">¿Cómo es su estilo? ¿Qué le gusta?</p>
+      <textarea [(ngModel)]="datos.descripcionPersona"
+        placeholder="Ej: estilo oscuro, minimalista, le gustan los circuitos..."></textarea>
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: presupuesto -->
+    <div *ngIf="pasoActual === 'presupuesto'" class="paso">
+      <h2>¿Cuál es tu presupuesto?</h2>
+      <p class="paso-hint">Orientativo, para ajustar el diseño.</p>
+      <input type="text" [(ngModel)]="datos.presupuesto" placeholder="Ej: 30€, 50-80€...">
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: accesorio -->
+    <div *ngIf="pasoActual === 'accesorio'" class="paso">
+      <h2>Tipo de accesorio</h2>
+
+      <div class="select-nav">
+        <button class="select-arrow" (click)="anteriorAccesorio()"
+          [disabled]="!datos.tipoAccesorio || accesoriosOpciones.indexOf(datos.tipoAccesorio) === 0">‹</button>
+        <select [(ngModel)]="datos.tipoAccesorio" (change)="onAccesorioChange()">
+          <option value="">Selecciona uno</option>
+          <option value="anillo">Anillo</option>
+          <option value="colgante">Colgante</option>
+          <option value="gargantilla">Gargantilla</option>
+          <option value="pendientes">Pendientes</option>
+          <option value="brazalete">Brazalete</option>
+          <option value="esclava">Esclava</option>
+          <option value="llavero">Llavero</option>
+          <option value="otro">Otro</option>
+        </select>
+        <button class="select-arrow" (click)="siguienteAccesorio()"
+          [disabled]="!datos.tipoAccesorio || accesoriosOpciones.indexOf(datos.tipoAccesorio) === accesoriosOpciones.length - 1">›</button>
+      </div>
+
+      <div *ngIf="datos.tipoAccesorio === 'otro'" class="campo-otro">
+        <input type="text" placeholder="Describe el accesorio" [(ngModel)]="datos.otroAccesorio">
+      </div>
+
+      <div *ngIf="fotosAccesorio.length > 0" class="carrusel">
+        <img [src]="fotosAccesorio[indiceCarrusel]" class="carrusel-img" alt="Ejemplo">
+        <div class="carrusel-nav">
+          <button class="carrusel-btn" (click)="carruselAnterior()" [disabled]="indiceCarrusel === 0">‹</button>
+          <span class="carrusel-contador">{{ indiceCarrusel + 1 }} / {{ fotosAccesorio.length }}</span>
+          <button class="carrusel-btn" (click)="carruselSiguiente()"
+            [disabled]="indiceCarrusel === fotosAccesorio.length - 1">›</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()" [disabled]="!datos.tipoAccesorio">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: origen -->
+    <div *ngIf="pasoActual === 'origen'" class="paso">
+      <h2>Origen del diseño</h2>
+      <div class="opciones-tipo">
+        <button class="opcion-card" (click)="datos.origen='nuevo'; siguiente()">
+          <span class="opcion-icon">✨</span>
+          <span>Crear desde cero</span>
+        </button>
+
+        <button class="opcion-card" [class.selected]="datos.origen === 'inspirado'" (click)="datos.origen='inspirado'">
+          <span class="opcion-icon">🔍</span>
+          <span>Inspirado en un diseño</span>
+        </button>
+      </div>
+
+      <div *ngIf="datos.origen === 'inspirado'" class="campo-referencia">
+        <input type="text" placeholder="Nombre del modelo o referencia" [(ngModel)]="datos.referencia">
+
+        <button class="btn-primario" (click)="siguiente()" [disabled]="!datos.referencia">
+          Siguiente
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO: materiales -->
+    <div *ngIf="pasoActual === 'materiales'" class="paso">
+      <h2>¿Qué materiales quieres?</h2>
+      <p class="paso-hint">Puedes combinar varios.</p>
+      <div class="materiales-grid">
+        <label class="material-card" [class.checked]="datos.materiales.includes('placa')">
+          <input type="checkbox" [checked]="datos.materiales.includes('placa')"
+            (change)="toggleMaterial('placa', $event)">
+          <span class="material-icon">🔌</span>
+          <span>Placa de circuitos</span>
+        </label>
+        <label class="material-card" [class.checked]="datos.materiales.includes('cadenas')">
+          <input type="checkbox" [checked]="datos.materiales.includes('cadenas')"
+            (change)="toggleMaterial('cadenas', $event)">
+          <span class="material-icon">⛓</span>
+          <span>Cadenas</span>
+        </label>
+        <label class="material-card" [class.checked]="datos.materiales.includes('resina')">
+          <input type="checkbox" [checked]="datos.materiales.includes('resina')"
+            (change)="toggleMaterial('resina', $event)">
+          <span class="material-icon">🧪</span>
+          <span>Resina epoxi</span>
+        </label>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()" [disabled]="datos.materiales.length === 0">Siguiente
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO: detalle_placa -->
+    <div *ngIf="pasoActual === 'detalle_placa'" class="paso">
+      <h2>Placa de circuitos</h2>
+
+      <label class="campo-label">Nivel de microcomponentes</label>
+      <input type="range" min="0" max="4" step="1" [(ngModel)]="materialesConfig.placa.nivel">
+      <p class="nivel-texto">{{ nivelesPlaca[materialesConfig.placa.nivel] }}</p>
+      <div class="carrusel-material">
+        <img [src]="fotosNivelesPlaca[materialesConfig.placa.nivel]" class="carrusel-img-material"
+          alt="Nivel de detalle">
+      </div>
+
+      <label class="campo-label">Color de placa</label>
+      <div class="select-nav">
+        <button class="select-arrow" (click)="anteriorColorPlaca()"
+          [disabled]="!materialesConfig.placa.color || coloresPlacaOpciones.indexOf(materialesConfig.placa.color) === 0">‹</button>
+        <select [(ngModel)]="materialesConfig.placa.color">
+          <option value="">Selecciona color</option>
+          <option value="verde">Verde</option>
+          <option value="negro">Negro</option>
+          <option value="azul">Azul</option>
+          <option value="amarillo">Amarillo</option>
+          <option value="rojo">Rojo</option>
+          <option value="blanco">Blanco</option>
+        </select>
+        <button class="select-arrow" (click)="siguienteColorPlaca()"
+          [disabled]="!materialesConfig.placa.color || coloresPlacaOpciones.indexOf(materialesConfig.placa.color) === coloresPlacaOpciones.length - 1">›</button>
+      </div>
+      <div *ngIf="materialesConfig.placa.color" class="carrusel-material">
+        <img [src]="fotoColorPlacaActual" class="carrusel-img-material" alt="Color de placa">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: detalle_cadenas -->
+    <div *ngIf="pasoActual === 'detalle_cadenas'" class="paso">
+      <h2>Cadenas</h2>
+
+      <label class="campo-label">Color</label>
+      <div class="select-nav">
+        <button class="select-arrow" (click)="anteriorColorCadena()"
+          [disabled]="!materialesConfig.cadenas.color || coloresMetalOpciones.indexOf(materialesConfig.cadenas.color) === 0">‹</button>
+        <select [(ngModel)]="materialesConfig.cadenas.color" (change)="onColorCadenaChange()">
+          <option value="">Selecciona color</option>
+          <option value="plateado">Plateado</option>
+          <option value="negro">Negro</option>
+          <option value="dorado">Dorado</option>
+        </select>
+        <button class="select-arrow" (click)="siguienteColorCadena()"
+          [disabled]="!materialesConfig.cadenas.color || coloresMetalOpciones.indexOf(materialesConfig.cadenas.color) === coloresMetalOpciones.length - 1">›</button>
+      </div>
+
+      <div *ngIf="materialesConfig.cadenas.color">
+        <label class="campo-label">Tipo de eslabón</label>
+        <div class="carrusel-material">
+          <img [src]="fotosCadenaActual[indiceCadena]" class="carrusel-img-material" alt="Tipo de cadena">
+          <div class="carrusel-nav">
+            <button class="carrusel-btn" (click)="cadenaAnterior()" [disabled]="indiceCadena === 0">‹</button>
+            <span class="carrusel-contador">{{ indiceCadena + 1 }} / {{ fotosCadenaActual.length }}</span>
+            <button class="carrusel-btn" (click)="cadenaSiguiente()"
+              [disabled]="indiceCadena === fotosCadenaActual.length - 1">›</button>
+          </div>
+        </div>
+        <input type="text" placeholder="Escribe el tipo elegido (ej: tipo A)"
+          [(ngModel)]="materialesConfig.cadenas.tipo">
+      </div>
+
+      <!-- Enganches solo si pendientes -->
+      <div *ngIf="datos.tipoAccesorio === 'pendientes'">
+        <h3>Tipo de enganche</h3>
+        <label class="campo-label">Color del enganche</label>
+        <div class="select-nav">
+          <button class="select-arrow" (click)="anteriorColorEnganche()"
+            [disabled]="!materialesConfig.enganches.color || coloresMetalOpciones.indexOf(materialesConfig.enganches.color) === 0">‹</button>
+          <select [(ngModel)]="materialesConfig.enganches.color" (change)="onColorEngancheChange()">
+            <option value="">Selecciona color</option>
+            <option value="plateado">Plateado</option>
+            <option value="negro">Negro</option>
+            <option value="dorado">Dorado</option>
+          </select>
+          <button class="select-arrow" (click)="siguienteColorEnganche()"
+            [disabled]="!materialesConfig.enganches.color || coloresMetalOpciones.indexOf(materialesConfig.enganches.color) === coloresMetalOpciones.length - 1">›</button>
+        </div>
+        <div *ngIf="materialesConfig.enganches.color">
+          <div class="carrusel-material">
+            <img [src]="fotosEngancheIndepActual[indiceEngancheIndep]" class="carrusel-img-material"
+              alt="Tipo de enganche">
+            <div class="carrusel-nav">
+              <button class="carrusel-btn" (click)="engancheIndepAnterior()"
+                [disabled]="indiceEngancheIndep === 0">‹</button>
+              <span class="carrusel-contador">{{ indiceEngancheIndep + 1 }} / {{ fotosEngancheIndepActual.length
+                }}</span>
+              <button class="carrusel-btn" (click)="engancheIndepSiguiente()"
+                [disabled]="indiceEngancheIndep === fotosEngancheIndepActual.length - 1">›</button>
+            </div>
+          </div>
+          <input type="text" placeholder="Escribe el tipo elegido (ej: tipo A)"
+            [(ngModel)]="materialesConfig.enganches.tipo">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: detalle_resina -->
+    <div *ngIf="pasoActual === 'detalle_resina'" class="paso">
+      <h2>Resina epoxi</h2>
+
+      <label class="campo-label">Tipo de resina</label>
+      <div class="select-nav">
+        <button class="select-arrow" (click)="anteriorTipoResina()"
+          [disabled]="!materialesConfig.resina.tipo || tiposResinaOpciones.indexOf(materialesConfig.resina.tipo) === 0">‹</button>
+        <select [(ngModel)]="materialesConfig.resina.tipo">
+          <option value="">Selecciona tipo</option>
+          <option value="transparente">Transparente</option>
+          <option value="tinta">Tinta DYE</option>
+          <option value="metalliquido">Metalizado Líquido</option>
+        </select>
+        <button class="select-arrow" (click)="siguienteTipoResina()"
+          [disabled]="!materialesConfig.resina.tipo || tiposResinaOpciones.indexOf(materialesConfig.resina.tipo) === tiposResinaOpciones.length - 1">›</button>
+      </div>
+      <div *ngIf="materialesConfig.resina.tipo" class="carrusel-material">
+        <img [src]="fotoResinaActual" class="carrusel-img-material" alt="Tipo de resina">
+      </div>
+      <label class="campo-label">Color</label>
+      <input type="text" placeholder="Ej: azul fluorescente, metalizado..." [(ngModel)]="materialesConfig.resina.color">
+
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: descripcion_final -->
+    <div *ngIf="pasoActual === 'descripcion_final'" class="paso">
+      <h2>Describe tu idea</h2>
+      <p class="paso-hint">Cuéntanos todo lo que quieras sobre tu diseño.</p>
+      <textarea [(ngModel)]="datos.descripcionFinal"
+        placeholder="Describe tu idea con todo el detalle que quieras..."></textarea>
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: email -->
+    <div *ngIf="pasoActual === 'email'" class="paso">
+      <h2>¿Cuál es tu email?</h2>
+      <p class="paso-hint">Te enviaremos la confirmación y el código de seguimiento.</p>
+      <input type="email" [(ngModel)]="datos.emailCliente" placeholder="tu@email.com">
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-primario" (click)="siguiente()" [disabled]="!datos.emailCliente">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- PASO: resumen -->
+    <div *ngIf="pasoActual === 'resumen'" class="paso">
+      <h2>Resumen del pedido</h2>
+      <div class="resumen-grid">
+        <div class="resumen-item" *ngIf="datos.tipoPedido">
+          <span class="resumen-label">Tipo</span>
+          <span class="resumen-valor">{{ datos.tipoPedido === 'propio' ? 'Para mí' : 'Para otra persona' }}</span>
+        </div>
+        <div class="resumen-item" *ngIf="datos.tipoAccesorio">
+          <span class="resumen-label">Accesorio</span>
+          <span class="resumen-valor">{{ datos.tipoAccesorio }}{{ datos.otroAccesorio ? ' — ' + datos.otroAccesorio :
+            ''
+            }}</span>
+        </div>
+        <div class="resumen-item" *ngIf="datos.presupuesto">
+          <span class="resumen-label">Presupuesto</span>
+          <span class="resumen-valor">{{ datos.presupuesto }}</span>
+        </div>
+        <div class="resumen-item" *ngIf="datos.origen">
+          <span class="resumen-label">Origen</span>
+          <span class="resumen-valor">{{ datos.origen === 'nuevo' ? 'Desde cero' : 'Inspirado — ' + datos.referencia
+            }}</span>
+        </div>
+        <div class="resumen-item" *ngIf="datos.materiales.length > 0">
+          <span class="resumen-label">Materiales</span>
+          <span class="resumen-valor">{{ datos.materiales.join(', ') }}</span>
+        </div>
+        <div class="resumen-item" *ngIf="datos.descripcionFinal">
+          <span class="resumen-label">Descripción</span>
+          <span class="resumen-valor">{{ datos.descripcionFinal }}</span>
+        </div>
+        <div class="resumen-item">
+          <span class="resumen-label">Email</span>
+          <span class="resumen-valor">{{ datos.emailCliente }}</span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
+        <button class="btn-enviar" (click)="enviarPedido()" [disabled]="enviando || enviado">
+          {{ !enviando && !enviado ? 'Enviar pedido' : enviando ? 'Enviando...' : '¡Listo! ✓' }}
+        </button>
+      </div>
+      <p *ngIf="errorEnvio" class="error-msg">Error al enviar. Inténtalo de nuevo.</p>
+    </div>
+
+  </div>
+
+</div>

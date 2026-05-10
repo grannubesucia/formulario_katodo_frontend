@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "6de467ea-61d6-45c1-ae8a-6494861b1c81"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -54,20 +55,22 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "frontend:build:production"
+          "options": {
+            "proxyConfig": "proxy.conf.json"},
+            "configurations": {
+              "production": {
+                "buildTarget": "frontend:build:production"
+              },
+              "development": {
+                "buildTarget": "frontend:build:development"
+              }
             },
-            "development": {
-              "buildTarget": "frontend:build:development"
-            }
+            "defaultConfiguration": "development"
           },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test"
+          "test": {
+            "builder": "@angular/build:unit-test"
+          }
         }
       }
     }
   }
-}

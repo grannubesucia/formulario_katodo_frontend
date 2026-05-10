@@ -1,0 +1,92 @@
+.confirmacion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--bg);
+  animation: fadeIn 0.5s ease both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.icono {
+  font-size: 3rem;
+  color: var(--orange);
+  margin-bottom: 24px;
+  animation: scaleIn 0.4s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+  animation: slideUp 0.4s 0.3s ease both;
+}
+
+p {
+  font-size: 0.9rem;
+  color: var(--text2);
+  margin: 4px 0;
+  animation: slideUp 0.4s 0.4s ease both;
+}
+
+.sub {
+  margin-bottom: 36px;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+button {
+  background: var(--orange);
+  border: none;
+  color: var(--bg);
+  padding: 13px 32px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  clip-path: polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 12px);
+  transition: background 0.2s, transform 0.15s;
+  animation: slideUp 0.4s 0.5s ease both;
+}
+
+button:hover {
+  background: var(--orange2);
+  transform: translateY(-1px);
+}

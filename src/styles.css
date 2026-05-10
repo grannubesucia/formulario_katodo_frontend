@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+html {
+  --bg:      #181619;
+  --bg2:     #1d1a1e;
+  --bg3:     #232027;
+  --orange:  #F18900;
+  --orange2: #d07800;
+  --text:    #B9C3BA;
+  --text2:   #6b746c;
+  --border:  #2a272e;
+  --font:    'Space Grotesk', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
