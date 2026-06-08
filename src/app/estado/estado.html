@@ -1,39 +1,41 @@
-<div class="estado-wrapper">
+<div class="estado-wrapper"> <!-- Contenedor principal de la vista de estado -->
 
-  <button class="btn-volver" (click)="volver()">← Inicio</button>
+  <button class="btn-volver" (click)="volver()">← Inicio</button> <!-- Botón para volver al inicio -->
 
   <h2>Estado de tu pedido</h2>
   <p>Introduce tu email para ver el estado de tus pedidos.</p>
 
-  <div class="buscador">
-    <input type="email" [(ngModel)]="email" placeholder="tu@email.com" (keyup.enter)="buscar()">
+  <div class="buscador"> <!-- Formulario de búsqueda -->
+    <input type="email" [(ngModel)]="email" placeholder="tu@email.com" (keyup.enter)="buscar()"> <!-- Input email -->
     <input type="text" [(ngModel)]="codigo" placeholder="Código de 6 dígitos" maxlength="6" (keyup.enter)="buscar()">
-    <button (click)="buscar()" [disabled]="cargando || !email || !codigo">
-      {{ cargando ? 'Buscando...' : 'Buscar' }}
+    <!-- Input código -->
+    <button (click)="buscar()" [disabled]="cargando || !email || !codigo"> <!-- Botón buscar -->
+      {{ cargando ? 'Buscando...' : 'Buscar' }} <!-- Texto dinámico -->
     </button>
   </div>
 
-  <div *ngIf="errorCodigo" class="sin-pedidos">
+  <div *ngIf="errorCodigo" class="sin-pedidos"> <!-- Error de validación -->
     Email o código incorrectos.
   </div>
 
-  <div *ngIf="buscado && pedidos.length === 0" class="sin-pedidos">
+  <div *ngIf="buscado && pedidos.length === 0" class="sin-pedidos"> <!-- Sin resultados -->
     No encontramos pedidos con ese email.
   </div>
 
-  <div *ngIf="pedidos.length > 0" class="pedidos-lista">
-    <div *ngFor="let p of pedidos" class="pedido-card">
+  <div *ngIf="pedidos.length > 0" class="pedidos-lista"> <!-- Lista de pedidos -->
+    <div *ngFor="let p of pedidos" class="pedido-card"> <!-- Itera pedidos -->
       <div class="pedido-header">
-        <span class="pedido-id">#{{ p.id }}</span>
+        <span class="pedido-id">#{{ p.id }}</span> <!-- ID del pedido -->
         <span [class]="'badge estado-' + (p.estado || '').toLowerCase().replace(' ', '-')">
-          {{ p.estado }}
+          {{ p.estado }} <!-- Estado del pedido -->
         </span>
       </div>
       <div class="pedido-info">
         <p><strong>Accesorio:</strong> {{ p.tipoAccesorio }}{{ p.otroAccesorio ? ' ('+p.otroAccesorio+')' : '' }}</p>
-        <p><strong>Presupuesto:</strong> {{ p.presupuesto }}</p>
-        <p><strong>Descripción:</strong> {{ p.descripcionFinal }}</p>
-        <p class="fecha">{{ p.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p>
+        <!-- Tipo accesorio -->
+        <p><strong>Presupuesto:</strong> {{ p.presupuesto }}</p> <!-- Presupuesto -->
+        <p><strong>Descripción:</strong> {{ p.descripcionFinal }}</p> <!-- Descripción -->
+        <p class="fecha">{{ p.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</p> <!-- Fecha formateada -->
       </div>
     </div>
   </div>

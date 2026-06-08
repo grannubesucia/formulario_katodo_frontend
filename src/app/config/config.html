@@ -1,45 +1,40 @@
-<div class="config-wrapper">
+<div class="config-wrapper"> <!-- Contenedor principal del panel -->
 
   <!-- LOGIN -->
-  <div *ngIf="!autenticado" class="login-box">
+  <div *ngIf="!autenticado" class="login-box"> <!-- Vista de login -->
     <h2>Panel de administración</h2>
     <p>Katodo Ciberjoyería</p>
-    <input type="password" [(ngModel)]="passwordInput" placeholder="Contraseña" (keyup.enter)="intentarLogin()">
-    <button (click)="intentarLogin()" [disabled]="cargandoLogin">
-      {{ cargandoLogin ? 'Verificando...' : 'Entrar' }}
+    <input type="password" [(ngModel)]="passwordInput" placeholder="Contraseña" (keyup.enter)="intentarLogin()"> <!-- Input contraseña -->
+    <button (click)="intentarLogin()" [disabled]="cargandoLogin"> <!-- Botón login -->
+      {{ cargandoLogin ? 'Verificando...' : 'Entrar' }} <!-- Texto dinámico -->
     </button>
-    <p *ngIf="errorLogin" class="error">Contraseña incorrecta</p>
+    <p *ngIf="errorLogin" class="error">Contraseña incorrecta</p> <!-- Error -->
   </div>
 
   <!-- PANEL -->
-  <div *ngIf="autenticado" class="panel">
+  <div *ngIf="autenticado" class="panel"> <!-- Panel principal -->
 
     <div class="panel-header">
       <h2>Pedidos recibidos</h2>
-      <span class="total">{{ pedidosFiltrados.length }} pedidos</span>
+      <span class="total">{{ pedidosFiltrados.length }} pedidos</span> <!-- Total pedidos -->
     </div>
 
     <!-- FILTROS -->
-    <div class="filtros">
-      <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+    <div class="filtros"> <!-- Filtros de búsqueda -->
+      <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()"> <!-- Filtro por estado -->
         <option value="">Todos los estados</option>
         <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
       </select>
-
-      <input type="text" [(ngModel)]="filtroEmail" (input)="aplicarFiltros()" placeholder="Filtrar por email">
-
-      <input type="text" [(ngModel)]="filtroAccesorio" (input)="aplicarFiltros()" placeholder="Tipo de accesorio">
-
-      <input type="date" [(ngModel)]="filtroFechaDesde" (change)="aplicarFiltros()">
-      <input type="date" [(ngModel)]="filtroFechaHasta" (change)="aplicarFiltros()">
-
-      <button (click)="limpiarFiltros()">Limpiar filtros</button>
+      <input type="text" [(ngModel)]="filtroEmail" (input)="aplicarFiltros()" placeholder="Filtrar por email"> <!-- Filtro email -->
+      <input type="text" [(ngModel)]="filtroAccesorio" (input)="aplicarFiltros()" placeholder="Tipo de accesorio"> <!-- Filtro accesorio -->
+      <input type="date" [(ngModel)]="filtroFechaDesde" (change)="aplicarFiltros()"> <!-- Filtro fecha -->
+      <button (click)="limpiarFiltros()">Limpiar filtros</button> <!-- Reset filtros -->
     </div>
 
     <!-- TABLA -->
-    <div *ngIf="cargando">Cargando pedidos...</div>
+    <div *ngIf="cargando">Cargando pedidos...</div> <!-- Estado de carga -->
 
-    <table *ngIf="!cargando">
+    <table *ngIf="!cargando"> <!-- Tabla de pedidos -->
       <thead>
         <tr>
           <th>#</th>
@@ -52,36 +47,52 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let p of pedidosFiltrados">
-          <td>{{ p.id }}</td>
-          <td>{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
-          <td>{{ p.emailCliente }}</td>
-          <td>{{ p.tipoAccesorio }}{{ p.otroAccesorio ? ' ('+p.otroAccesorio+')' : '' }}</td>
-          <td>{{ p.presupuesto }}</td>
-          <td class="descripcion">{{ p.descripcionFinal }}</td>
-          <td>
-            <select [(ngModel)]="p.estado" (ngModelChange)="confirmarCambioEstado(p, $event)"
-              [class]="'estado-' + (p.estado || '').toLowerCase().replace(' ', '-')">
-              <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
-            </select>
-          </td>
-        </tr>
+        <ng-container *ngFor="let p of pedidosFiltrados"> <!-- Iteración pedidos -->
+          <tr (click)="toggleDetalle(p)" style="cursor:pointer"> <!-- Fila principal -->
+            <td>{{ p.id }}</td>
+            <td>{{ p.fechaCreacion | date:'dd/MM/yy HH:mm' }}</td>
+            <td>{{ p.emailCliente }}</td>
+            <td>{{ p.tipoAccesorio }}{{ p.otroAccesorio ? ' ('+p.otroAccesorio+')' : '' }}</td>
+            <td>{{ p.presupuesto }}</td>
+            <td class="descripcion">{{ p.descripcionFinal }}</td>
+            <td>
+              <select [(ngModel)]="p.estado"
+                (ngModelChange)="confirmarCambioEstado(p, $event)" 
+                [class]="'estado-' + (p.estado || '').toLowerCase().replace(' ', '-')"
+                (click)="$event.stopPropagation()"> <!-- Evita abrir detalle -->
+                <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+              </select>
+            </td>
+          </tr>
+
+          <!-- FILA DETALLE -->
+          <tr *ngIf="pedidoDetalle?.id === p.id" class="detalle-row">
+            <td colspan="7">
+              <div class="detalle-box"> <!-- Información ampliada -->
+                <p><strong>Tipo:</strong> {{ p.tipoPedido === 'propio' ? 'Para mí' : 'Para otra persona' }}</p>
+                <p *ngIf="p.descripcionPersona"><strong>Descripción persona:</strong> {{ p.descripcionPersona }}</p>
+                <p><strong>Origen:</strong> {{ p.origen }}{{ p.referencia ? ' — ' + p.referencia : '' }}</p>
+                <p><strong>Materiales:</strong> {{ p.materiales }}</p>
+                <p><strong>Config materiales:</strong> {{ p.materialesConfig }}</p>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
 
     <p *ngIf="!cargando && pedidosFiltrados.length === 0">
-      No hay pedidos con esos filtros.
+      No hay pedidos con esos filtros. <!-- Mensaje sin resultados -->
     </p>
 
     <!-- POPUP CONFIRMACIÓN -->
-    <div *ngIf="mostrarConfirmacion" class="popup-overlay">
+    <div *ngIf="mostrarConfirmacion" class="popup-overlay"> <!-- Overlay -->
       <div class="popup-box">
-        <p>¿Cambiar el pedido <strong>#{{ pedidoSeleccionado?.id }}</strong> a <strong>{{ nuevoEstadoSeleccionado
-            }}</strong>?</p>
+        <p>¿Cambiar el pedido <strong>#{{ pedidoSeleccionado?.id }}</strong> a <strong>{{ nuevoEstadoSeleccionado }}</strong>?</p>
         <p class="popup-hint">Se enviará un email al cliente.</p>
         <div class="popup-btns">
-          <button class="btn-cancelar" (click)="cancelarCambio()">Cancelar</button>
-          <button class="btn-confirmar" (click)="confirmarCambio()">Confirmar</button>
+          <button class="btn-cancelar" (click)="cancelarCambio()">Cancelar</button> <!-- Cancelar -->
+          <button class="btn-confirmar" (click)="confirmarCambio()">Confirmar</button> <!-- Confirmar -->
         </div>
       </div>
     </div>

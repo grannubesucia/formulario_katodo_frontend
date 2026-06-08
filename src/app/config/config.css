@@ -25,8 +25,13 @@ td select,
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .login-box {
@@ -46,7 +51,12 @@ td select,
   letter-spacing: -0.3px;
 }
 
-.login-box p { font-size: 0.8rem; color: var(--text2); letter-spacing: 2px; text-transform: uppercase; }
+.login-box p {
+  font-size: 0.8rem;
+  color: var(--text2);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
 
 .login-box input {
   background: var(--bg2);
@@ -59,7 +69,10 @@ td select,
   outline: none;
   transition: border-color 0.2s;
 }
-.login-box input:focus { border-color: var(--orange); }
+
+.login-box input:focus {
+  border-color: var(--orange);
+}
 
 .login-box button {
   background: var(--orange);
@@ -74,11 +87,20 @@ td select,
   letter-spacing: 0.5px;
   transition: background 0.2s;
 }
-.login-box button:hover { background: var(--orange2); }
 
-.error { color: #ff5555; font-size: 0.85rem; }
+.login-box button:hover {
+  background: var(--orange2);
+}
 
-.panel { max-width: 1200px; margin: 0 auto; }
+.error {
+  color: #ff5555;
+  font-size: 0.85rem;
+}
+
+.panel {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
 .panel-header {
   display: flex;
@@ -120,7 +142,11 @@ td select,
   transition: border-color 0.2s;
   appearance: none;
 }
-.filtros input:focus, .filtros select:focus { border-color: var(--orange); }
+
+.filtros input:focus,
+.filtros select:focus {
+  border-color: var(--orange);
+}
 
 .filtros button {
   background: transparent;
@@ -132,9 +158,17 @@ td select,
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.filtros button:hover { border-color: var(--orange); color: var(--orange); }
 
-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.filtros button:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
 
 th {
   text-align: left;
@@ -153,7 +187,10 @@ td {
   color: var(--text);
   transition: background 0.15s;
 }
-tr:hover td { background: var(--bg2); }
+
+tr:hover td {
+  background: var(--bg2);
+}
 
 .descripcion {
   max-width: 180px;
@@ -173,15 +210,30 @@ td select {
   outline: none;
 }
 
-.estado-recibido { border-color: var(--text2); }
-.estado-en-proceso { border-color: var(--orange); color: var(--orange); }
-.estado-listo { border-color: #22c55e; color: #22c55e; }
-.estado-entregado { border-color: var(--border); color: var(--text2); opacity: 0.5; }
+.estado-recibido {
+  border-color: var(--text2);
+}
+
+.estado-en-proceso {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.estado-listo {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.estado-entregado {
+  border-color: var(--border);
+  color: var(--text2);
+  opacity: 0.5;
+}
 
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,8 +251,15 @@ td select {
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.92); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .popup-box p {
@@ -232,7 +291,11 @@ td select {
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.btn-cancelar:hover { border-color: #6b746c; color: #B9C3BA; }
+
+.btn-cancelar:hover {
+  border-color: #6b746c;
+  color: #B9C3BA;
+}
 
 .btn-confirmar {
   background: #F18900;
@@ -245,4 +308,29 @@ td select {
   cursor: pointer;
   transition: background 0.2s;
 }
-.btn-confirmar:hover { background: #d07800; }
+
+.btn-confirmar:hover {
+  background: #d07800;
+}
+
+.detalle-row td {
+  background: var(--bg3);
+  padding: 0;
+}
+
+.detalle-box {
+  padding: 16px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.detalle-box p {
+  font-size: 0.8rem;
+  color: var(--text2);
+  margin: 0;
+}
+
+.detalle-box strong {
+  color: var(--text);
+}

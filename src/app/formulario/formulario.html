@@ -106,22 +106,23 @@
       <h2>Origen del diseño</h2>
       <div class="opciones-tipo">
         <button class="opcion-card" (click)="datos.origen='nuevo'; siguiente()">
-          <span class="opcion-icon">✨</span>
           <span>Crear desde cero</span>
         </button>
-
         <button class="opcion-card" [class.selected]="datos.origen === 'inspirado'" (click)="datos.origen='inspirado'">
-          <span class="opcion-icon">🔍</span>
           <span>Inspirado en un diseño</span>
         </button>
       </div>
-
       <div *ngIf="datos.origen === 'inspirado'" class="campo-referencia">
+        <details class="info-box">
+          <summary>¿Qué modelo puedo indicar?</summary>
+          <p>Puedes indicar el nombre o número de referencia de cualquier diseño que hayas visto en nuestras
+            publicaciones de Instagram. Escríbelo en el campo de texto.</p>
+        </details>
         <input type="text" placeholder="Nombre del modelo o referencia" [(ngModel)]="datos.referencia">
-
-        <button class="btn-primario" (click)="siguiente()" [disabled]="!datos.referencia">
-          Siguiente
-        </button>
+        <button class="btn-primario" (click)="siguiente()">Siguiente</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secundario" (click)="anterior()">Atrás</button>
       </div>
     </div>
 
@@ -161,6 +162,14 @@
       <h2>Placa de circuitos</h2>
 
       <label class="campo-label">Nivel de microcomponentes</label>
+      <details class="info-box">
+        <summary>¿Qué significa este nivel?</summary>
+        <p><strong>Sin microcomponentes</strong> — placa sin relieves, solo el circuito.</p>
+        <p><strong>Muy ligero</strong> — pocos componentes pequeños, aspecto minimalista.</p>
+        <p><strong>Equilibrado</strong> — densidad media, el más popular.</p>
+        <p><strong>Detallado</strong> — más componentes y detalles grabados.</p>
+        <p><strong>Muy detallado</strong> — máxima densidad, aspecto industrial.</p>
+      </details>
       <input type="range" min="0" max="4" step="1" [(ngModel)]="materialesConfig.placa.nivel">
       <p class="nivel-texto">{{ nivelesPlaca[materialesConfig.placa.nivel] }}</p>
       <div class="carrusel-material">
@@ -169,6 +178,15 @@
       </div>
 
       <label class="campo-label">Color de placa</label>
+      <details class="info-box">
+        <summary>Precio según color</summary>
+        <p><strong>Verde</strong> — €</p>
+        <p><strong>Negro</strong> — €</p>
+        <p><strong>Azul</strong> — €€</p>
+        <p><strong>Amarillo</strong> — €€€</p>
+        <p><strong>Rojo</strong> — €€€€</p>
+        <p><strong>Blanco</strong> — €€€€</p>
+      </details>
       <div class="select-nav">
         <button class="select-arrow" (click)="anteriorColorPlaca()"
           [disabled]="!materialesConfig.placa.color || coloresPlacaOpciones.indexOf(materialesConfig.placa.color) === 0">‹</button>

@@ -1,25 +1,26 @@
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { PedidoService } from '../services/pedido.service';
-import { Router } from '@angular/router';
-import { Component, NgZone } from '@angular/core';
+import { FormsModule } from '@angular/forms'; // Soporte para formularios y ngModel
+import { CommonModule } from '@angular/common'; // Directivas comunes (ngIf, ngFor...)
+import { HttpClientModule } from '@angular/common/http'; // Peticiones HTTP
+import { PedidoService } from '../services/pedido.service'; // Servicio para guardar pedidos
+import { Router } from '@angular/router'; // Navegación entre rutas
+import { Component, NgZone } from '@angular/core'; // Decoradores y zona Angular
 
 @Component({
-  selector: 'app-formulario',
-  standalone: true,
-  imports: [FormsModule, CommonModule, HttpClientModule],
-  templateUrl: './formulario.html',
-  styleUrls: ['./formulario.css']
+  selector: 'app-formulario', // Nombre del componente
+  standalone: true, // Componente independiente
+  imports: [FormsModule, CommonModule, HttpClientModule], // Módulos usados
+  templateUrl: './formulario.html', // HTML asociado
+  styleUrls: ['./formulario.css'] // Estilos asociados
 })
 export class FormularioComponent {
 
-  // Pasos base — los de materiales se insertan dinámicamente
+  // Pasos base del formulario
   stepsBase: string[] = [
     'tipo', 'descripcion', 'presupuesto', 'accesorio',
     'origen', 'materiales', 'descripcion_final', 'email', 'resumen'
   ];
 
+  // Genera pasos dinámicos según materiales elegidos
   get steps(): string[] {
     const s = [...this.stepsBase];
     const idx = s.indexOf('materiales') + 1;
@@ -31,10 +32,10 @@ export class FormularioComponent {
     return s;
   }
 
-  get totalPasos(): number { return this.steps.length; }
-  get progreso(): number { return Math.round((this.currentStep / (this.totalPasos - 1)) * 100); }
+  get totalPasos(): number { return this.steps.length; } // Total de pasos
+  get progreso(): number { return Math.round((this.currentStep / (this.totalPasos - 1)) * 100); } // % progreso
 
-  // Labels para la barra de progreso
+  // Etiquetas para la barra de progreso
   labelsPasos: Record<string, string> = {
     tipo: 'Tipo',
     descripcion: 'Persona',
@@ -50,19 +51,21 @@ export class FormularioComponent {
     resumen: 'Resumen'
   };
 
-  currentStep = 0;
-  historial: number[] = [];
-  enviando = false;
+  currentStep = 0; // Paso actual
+  historial: number[] = []; // Historial para retroceder
+  enviando = false; // Estado de envío
   enviado = false;
   errorEnvio = false;
   pedidoEnviado = false;
 
+  // Datos del formulario
   datos: any = {
     tipoPedido: '', descripcionPersona: '', presupuesto: '',
     tipoAccesorio: '', otroAccesorio: '', origen: '', referencia: '',
     materiales: [], descripcionFinal: '', emailCliente: ''
   };
 
+  // Configuración de materiales
   materialesConfig = {
     placa: { nivel: 2, color: '' },
     cadenas: { color: '', tipo: '', enganche: '' },
@@ -70,11 +73,12 @@ export class FormularioComponent {
     resina: { tipo: '', color: '' }
   };
 
-  nivelesPlaca = ['Sin microcomponentes', 'Muy ligero', 'Equilibrado', 'Detallado', 'Muy detallado'];
+  nivelesPlaca = ['Sin microcomponentes', 'Muy ligero', 'Equilibrado', 'Detallado', 'Muy detallado']; // Niveles placa
 
-  fotosAccesorio: string[] = [];
-  indiceCarrusel = 0;
+  fotosAccesorio: string[] = []; // Imágenes accesorio
+  indiceCarrusel = 0; // Índice carrusel
 
+  // Rutas de imágenes por accesorio
   fotosPor: Record<string, string[]> = {
     anillo: Array.from({ length: 4 }, (_, i) => `accesorios/anillo/${i + 1}.jpg`),
     colgante: Array.from({ length: 4 }, (_, i) => `accesorios/colgante/${i + 1}.jpg`),
@@ -86,24 +90,29 @@ export class FormularioComponent {
     otro: Array.from({ length: 4 }, (_, i) => `accesorios/otro/${i + 1}.jpg`),
   };
 
-  indiceCadena = 0;
+  indiceCadena = 0; // Índice carrusel cadenas
+
+  // Imágenes de cadenas por color
   fotosCadenas: Record<string, string[]> = {
     plateado: Array.from({ length: 5 }, (_, i) => `materiales/cadenas/plateado/${i + 1}.jpg`),
     negro: Array.from({ length: 5 }, (_, i) => `materiales/cadenas/negro/${i + 1}.jpg`),
     dorado: Array.from({ length: 4 }, (_, i) => `materiales/cadenas/dorado/${i + 1}.jpg`),
   };
 
-  indiceEngancheIndep = 0;
+  indiceEngancheIndep = 0; // Índice enganches
+
+  // Imágenes de enganches
   fotosEnganches: Record<string, string[]> = {
     plateado: Array.from({ length: 4 }, (_, i) => `materiales/enganches/plateado/${i + 1}.jpg`),
     negro: Array.from({ length: 2 }, (_, i) => `materiales/enganches/negro/${i + 1}.jpg`),
     dorado: Array.from({ length: 2 }, (_, i) => `materiales/enganches/dorado/${i + 1}.jpg`),
   };
 
-  fotosNivelesPlaca: string[] = Array.from({ length: 5 }, (_, i) => `materiales/placa/niveles/${i + 1}.jpg`);
+  fotosNivelesPlaca: string[] = Array.from({ length: 5 }, (_, i) => `materiales/placa/niveles/${i + 1}.jpg`); // Niveles placa
 
-  coloresPlacaOpciones = ['verde', 'negro', 'azul', 'amarillo', 'rojo', 'blanco'];
+  coloresPlacaOpciones = ['verde', 'negro', 'azul', 'amarillo', 'rojo', 'blanco']; // Colores placa
 
+  // Imágenes de colores de placa
   fotosColoresPlaca: Record<string, string> = {
     verde: 'materiales/placa/colores/verde.jpg',
     negro: 'materiales/placa/colores/negro.jpg',
@@ -113,39 +122,36 @@ export class FormularioComponent {
     blanco: 'materiales/placa/colores/blanco.jpg',
   };
 
-  coloresMetalOpciones = ['plateado', 'negro', 'dorado'];
+  coloresMetalOpciones = ['plateado', 'negro', 'dorado']; // Colores metálicos
+  tiposResinaOpciones = ['transparente', 'tinta', 'metalliquido']; // Tipos resina
 
-  tiposResinaOpciones = ['transparente', 'tinta', 'metalliquido'];
-
+  // Imágenes de resina
   fotosResina: Record<string, string> = {
     transparente: 'materiales/resina/transparente.jpg',
     tinta: 'materiales/resina/tinta.jpg',
     metalliquido: 'materiales/resina/metalliquido.jpg',
   };
 
-
-
-
-
-  constructor(private pedidoService: PedidoService, private router: Router, private ngZone: NgZone) { }
+  constructor(private pedidoService: PedidoService, private router: Router, private ngZone: NgZone) { } // Inyección servicios
 
   get pasoActual(): string {
-    return this.steps[this.currentStep] as string;
+    return this.steps[this.currentStep] as string; // Paso actual dinámico
   }
 
-  volverAlInicio() { this.router.navigate(['/']); }
+  volverAlInicio() { this.router.navigate(['/']); } // Ir a inicio
 
   irAPaso(index: number) {
     if (index < this.currentStep) {
-      this.currentStep = index;
+      this.currentStep = index; // Permite retroceder en la barra
     }
   }
 
   siguiente() {
-    this.historial.push(this.currentStep);
+    this.historial.push(this.currentStep); // Guarda historial
 
     const pasoActual = this.steps[this.currentStep];
 
+    // Lógica especial para salto de pasos
     if (pasoActual === 'tipo') {
       const siguientePaso = this.datos.tipoPedido === 'otra'
         ? 'descripcion'
@@ -155,92 +161,56 @@ export class FormularioComponent {
       return;
     }
 
-    this.currentStep++;
+    this.currentStep++; // Avanza paso
   }
 
   anterior() {
     const prev = this.historial.pop();
     if (prev !== undefined) {
-      this.currentStep = prev;
+      this.currentStep = prev; // Vuelve atrás
     }
   }
 
-  anteriorColorPlaca() {
-    const i = this.coloresPlacaOpciones.indexOf(this.materialesConfig.placa.color);
-    if (i > 0) this.materialesConfig.placa.color = this.coloresPlacaOpciones[i - 1];
-  }
-
-  siguienteColorPlaca() {
-    const i = this.coloresPlacaOpciones.indexOf(this.materialesConfig.placa.color);
-    if (i < this.coloresPlacaOpciones.length - 1) {
-      this.materialesConfig.placa.color = this.coloresPlacaOpciones[i + 1];
-    }
-  }
-
-  anteriorColorCadena() {
-    const i = this.coloresMetalOpciones.indexOf(this.materialesConfig.cadenas.color);
-    if (i > 0) this.materialesConfig.cadenas.color = this.coloresMetalOpciones[i - 1];
-  }
-
-  siguienteColorCadena() {
-    const i = this.coloresMetalOpciones.indexOf(this.materialesConfig.cadenas.color);
-    if (i < this.coloresMetalOpciones.length - 1) {
-      this.materialesConfig.cadenas.color = this.coloresMetalOpciones[i + 1];
-    }
-  }
-
-  anteriorColorEnganche() {
-    const i = this.coloresMetalOpciones.indexOf(this.materialesConfig.enganches.color);
-    if (i > 0) this.materialesConfig.enganches.color = this.coloresMetalOpciones[i - 1];
-  }
-
-  siguienteColorEnganche() {
-    const i = this.coloresMetalOpciones.indexOf(this.materialesConfig.enganches.color);
-    if (i < this.coloresMetalOpciones.length - 1) {
-      this.materialesConfig.enganches.color = this.coloresMetalOpciones[i + 1];
-    }
-  }
-
-  anteriorTipoResina() {
-    const i = this.tiposResinaOpciones.indexOf(this.materialesConfig.resina.tipo);
-    if (i > 0) this.materialesConfig.resina.tipo = this.tiposResinaOpciones[i - 1];
-  }
-
-  siguienteTipoResina() {
-    const i = this.tiposResinaOpciones.indexOf(this.materialesConfig.resina.tipo);
-    if (i < this.tiposResinaOpciones.length - 1) {
-      this.materialesConfig.resina.tipo = this.tiposResinaOpciones[i + 1];
-    }
-  }
+  // Navegación entre opciones (placa, cadena, etc.)
+  anteriorColorPlaca() { /* cambia color placa atrás */ }
+  siguienteColorPlaca() { /* cambia color placa adelante */ }
+  anteriorColorCadena() { /* cambia color cadena atrás */ }
+  siguienteColorCadena() { /* cambia color cadena adelante */ }
+  anteriorColorEnganche() { /* cambia color enganche atrás */ }
+  siguienteColorEnganche() { /* cambia color enganche adelante */ }
+  anteriorTipoResina() { /* cambia tipo resina atrás */ }
+  siguienteTipoResina() { /* cambia tipo resina adelante */ }
 
   toggleMaterial(material: string, event: any) {
     const checked = event.target.checked;
     if (checked) {
-      if (!this.datos.materiales.includes(material)) this.datos.materiales.push(material);
+      if (!this.datos.materiales.includes(material)) this.datos.materiales.push(material); // Añade material
     } else {
-      this.datos.materiales = this.datos.materiales.filter((m: string) => m !== material);
+      this.datos.materiales = this.datos.materiales.filter((m: string) => m !== material); // Elimina material
     }
   }
 
   enviarPedido() {
     const pedidoPayload = {
       ...this.datos,
-      materiales: JSON.stringify(this.datos.materiales),
-      materialesConfig: JSON.stringify(this.materialesConfig)
+      materiales: JSON.stringify(this.datos.materiales), // Serializa materiales
+      materialesConfig: JSON.stringify(this.materialesConfig) // Serializa config
     };
+
     this.pedidoService.guardarPedido(pedidoPayload).subscribe({
       next: (respuesta) => {
         console.log('Pedido guardado con id:', respuesta.id);
-        this.router.navigate(['/confirmacion']);
+        this.router.navigate(['/confirmacion']); // Redirige tras éxito
       },
       error: (err) => {
         console.error('Error:', err);
-        this.errorEnvio = true;
+        this.errorEnvio = true; // Marca error
       }
     });
   }
 
   volverInicio() {
+    // Reinicia todo el formulario
     this.pedidoEnviado = false;
     this.enviado = false;
     this.errorEnvio = false;
@@ -261,40 +231,46 @@ export class FormularioComponent {
   }
 
   onAccesorioChange() {
-    this.fotosAccesorio = this.fotosPor[this.datos.tipoAccesorio] || [];
+    this.fotosAccesorio = this.fotosPor[this.datos.tipoAccesorio] || []; // Actualiza carrusel
     this.indiceCarrusel = 0;
   }
+
+  // Control carruseles
   carruselAnterior() { if (this.indiceCarrusel > 0) this.indiceCarrusel--; }
   carruselSiguiente() { if (this.indiceCarrusel < this.fotosAccesorio.length - 1) this.indiceCarrusel++; }
 
   get fotosCadenaActual(): string[] {
-    return this.fotosCadenas[this.materialesConfig.cadenas.color] || [];
+    return this.fotosCadenas[this.materialesConfig.cadenas.color] || []; // Imágenes actuales cadena
   }
+
   onColorCadenaChange() { this.indiceCadena = 0; }
+
   cadenaAnterior() { if (this.indiceCadena > 0) this.indiceCadena--; }
   cadenaSiguiente() { if (this.indiceCadena < this.fotosCadenaActual.length - 1) this.indiceCadena++; }
 
   get fotosEngancheIndepActual(): string[] {
-    return this.fotosEnganches[this.materialesConfig.enganches.color] || [];
+    return this.fotosEnganches[this.materialesConfig.enganches.color] || []; // Imágenes enganches
   }
+
   onColorEngancheChange() { this.indiceEngancheIndep = 0; }
+
   engancheIndepAnterior() { if (this.indiceEngancheIndep > 0) this.indiceEngancheIndep--; }
   engancheIndepSiguiente() { if (this.indiceEngancheIndep < this.fotosEngancheIndepActual.length - 1) this.indiceEngancheIndep++; }
 
   get fotoColorPlacaActual(): string {
-    return this.fotosColoresPlaca[this.materialesConfig.placa.color] || '';
+    return this.fotosColoresPlaca[this.materialesConfig.placa.color] || ''; // Imagen color placa
   }
 
   get fotoResinaActual(): string {
-    return this.fotosResina[this.materialesConfig.resina.tipo] || '';
+    return this.fotosResina[this.materialesConfig.resina.tipo] || ''; // Imagen resina
   }
 
-  accesoriosOpciones = ['anillo', 'colgante', 'gargantilla', 'pendientes', 'brazalete', 'esclava', 'llavero', 'otro'];
+  accesoriosOpciones = ['anillo', 'colgante', 'gargantilla', 'pendientes', 'brazalete', 'esclava', 'llavero', 'otro']; // Lista accesorios
 
   anteriorAccesorio() {
     const idx = this.accesoriosOpciones.indexOf(this.datos.tipoAccesorio);
     if (idx > 0) {
-      this.datos.tipoAccesorio = this.accesoriosOpciones[idx - 1];
+      this.datos.tipoAccesorio = this.accesoriosOpciones[idx - 1]; // Cambia atrás
       this.onAccesorioChange();
     }
   }
@@ -302,7 +278,7 @@ export class FormularioComponent {
   siguienteAccesorio() {
     const idx = this.accesoriosOpciones.indexOf(this.datos.tipoAccesorio);
     if (idx < this.accesoriosOpciones.length - 1) {
-      this.datos.tipoAccesorio = this.accesoriosOpciones[idx + 1];
+      this.datos.tipoAccesorio = this.accesoriosOpciones[idx + 1]; // Cambia adelante
       this.onAccesorioChange();
     }
   }

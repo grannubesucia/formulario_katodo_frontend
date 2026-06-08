@@ -1,62 +1,66 @@
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { PedidoService, Pedido } from '../services/pedido.service';
-import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Directivas comunes
+import { FormsModule } from '@angular/forms'; // Formularios
+import { HttpClientModule } from '@angular/common/http'; // HTTP
+import { PedidoService, Pedido } from '../services/pedido.service'; // Servicio y modelo
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core'; // Angular core
 
 @Component({
-  selector: 'app-config',
-  standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
-  templateUrl: './config.html',
-  styleUrls: ['./config.css']
+  selector: 'app-config', // Nombre del componente
+  standalone: true, // Componente independiente
+  imports: [CommonModule, FormsModule, HttpClientModule], // Módulos usados
+  templateUrl: './config.html', // HTML
+  styleUrls: ['./config.css'] // Estilos
 })
 export class ConfigComponent implements OnInit {
 
   // Login
-  autenticado = false;
-  passwordInput = '';
-  errorLogin = false;
-  cargandoLogin = false;
+  autenticado = false; // Estado de login
+  passwordInput = ''; // Input contraseña
+  errorLogin = false; // Error login
+  cargandoLogin = false; // Estado carga login
 
   // Pedidos
-  pedidos: Pedido[] = [];
-  pedidosFiltrados: Pedido[] = [];
-  cargando = false;
+  pedidos: Pedido[] = []; // Lista total
+  pedidosFiltrados: Pedido[] = []; // Lista filtrada
+  cargando = false; // Estado carga pedidos
 
   // Filtros
-  filtroEstado = '';
-  filtroEmail = '';
-  filtroAccesorio = '';
-  filtroFechaDesde = '';
-  filtroFechaHasta = '';
+  filtroEstado = ''; // Filtro por estado
+  filtroEmail = ''; // Filtro por email
+  filtroAccesorio = ''; // Filtro accesorio
+  filtroFechaDesde = ''; // Filtro fecha desde
+  filtroFechaHasta = ''; // (no usado aquí)
 
-  mostrarConfirmacion = false;
-  pedidoSeleccionado: Pedido | null = null;
-  nuevoEstadoSeleccionado = '';
+  // Confirmación cambio estado
+  mostrarConfirmacion = false; // Mostrar popup
+  pedidoSeleccionado: Pedido | null = null; // Pedido activo
+  nuevoEstadoSeleccionado = ''; // Nuevo estado
 
-  estados = ['Recibido', 'En proceso', 'Listo', 'Entregado'];
+  estados = ['Recibido', 'En proceso', 'Listo', 'Entregado']; // Estados posibles
 
-  estadoAnterior = '';
+  estadoAnterior = ''; // Guarda estado previo
+
+  pedidoDetalle: Pedido | null = null; // Pedido expandido
 
   constructor(private pedidoService: PedidoService, private ngZone: NgZone, private cdr: ChangeDetectorRef) { }
 
-  ngOnInit() { }
+  ngOnInit() { } // Inicialización
 
   intentarLogin() {
     this.cargandoLogin = true;
     this.errorLogin = false;
+
     this.pedidoService.login(this.passwordInput).subscribe({
       next: (res) => {
         this.ngZone.run(() => {
           if (res.ok) {
-            this.autenticado = true;
-            this.cargarPedidos();
+            this.autenticado = true; // Login correcto
+            this.cargarPedidos(); // Carga pedidos
           } else {
-            this.errorLogin = true;
+            this.errorLogin = true; // Error
           }
           this.cargandoLogin = false;
-          this.cdr.detectChanges();
+          this.cdr.detectChanges(); // Refresca vista
         });
       },
       error: () => {
@@ -71,11 +75,12 @@ export class ConfigComponent implements OnInit {
 
   cargarPedidos() {
     this.cargando = true;
+
     this.pedidoService.listarPedidos().subscribe({
       next: (data) => {
         this.ngZone.run(() => {
-          this.pedidos = data;
-          this.aplicarFiltros();
+          this.pedidos = data; // Guarda pedidos
+          this.aplicarFiltros(); // Aplica filtros
           this.cargando = false;
           this.cdr.detectChanges();
         });
@@ -91,81 +96,67 @@ export class ConfigComponent implements OnInit {
 
   aplicarFiltros() {
     this.pedidosFiltrados = this.pedidos.filter(p => {
-      const okEstado = !this.filtroEstado || p.estado === this.filtroEstado;
+      const okEstado = !this.filtroEstado || p.estado === this.filtroEstado; // Filtro estado
       const okEmail = !this.filtroEmail ||
-        p.emailCliente?.toLowerCase().includes(this.filtroEmail.toLowerCase());
+        p.emailCliente?.toLowerCase().includes(this.filtroEmail.toLowerCase()); // Filtro email
       const okAccesorio = !this.filtroAccesorio ||
-        p.tipoAccesorio?.toLowerCase().includes(this.filtroAccesorio.toLowerCase());
+        p.tipoAccesorio?.toLowerCase().includes(this.filtroAccesorio.toLowerCase()); // Filtro accesorio
       const okDesde = !this.filtroFechaDesde ||
-        new Date(p.fechaCreacion!) >= new Date(this.filtroFechaDesde);
-      const okHasta = !this.filtroFechaHasta ||
-        new Date(p.fechaCreacion!) <= new Date(this.filtroFechaHasta + 'T23:59:59');
-      return okEstado && okEmail && okAccesorio && okDesde && okHasta;
+        new Date(p.fechaCreacion!) >= new Date(this.filtroFechaDesde); // Filtro fecha
+
+      return okEstado && okEmail && okAccesorio && okDesde;
     });
   }
 
   cambiarEstado(pedido: Pedido, nuevoEstado: string) {
     this.pedidoService.actualizarEstado(pedido.id!, nuevoEstado).subscribe({
       next: (actualizado) => {
-        pedido.estado = actualizado.estado;
+        pedido.estado = actualizado.estado; // Actualiza estado
         this.aplicarFiltros();
       }
     });
   }
-
-  /*
-  En este método se limpian todos los filtros de búsqueda y se vuelven a aplicar para mostrar la lista completa de pedidos sin ningún filtro activo.
-  */
 
   limpiarFiltros() {
     this.filtroEstado = '';
     this.filtroEmail = '';
     this.filtroAccesorio = '';
     this.filtroFechaDesde = '';
-    this.filtroFechaHasta = '';
-    this.aplicarFiltros();
+    this.aplicarFiltros(); // Reset filtros
   }
 
-  /*
-  En este método se inicia el proceso de cambio de estado de un pedido. Se verifica si el nuevo estado es diferente al actual, y si es así, se almacena el pedido seleccionado y el nuevo estado en variables, y se muestra la ventana de confirmación para que el usuario confirme o cancele el cambio.
-  */
-
   confirmarCambioEstado(pedido: Pedido, nuevoEstado: string) {
-    if (this.estadoAnterior === nuevoEstado) return;
+    if (this.estadoAnterior === nuevoEstado) return; // Evita cambios innecesarios
+
     this.ngZone.run(() => {
       this.estadoAnterior = pedido.estado || '';
       this.pedidoSeleccionado = pedido;
       this.nuevoEstadoSeleccionado = nuevoEstado;
-      this.mostrarConfirmacion = true;
+      this.mostrarConfirmacion = true; // Muestra popup
       this.cdr.detectChanges();
     });
   }
 
-  /*
-  En este método se cancela el cambio de estado del pedido seleccionado. Se oculta la ventana de confirmación y se limpian las variables relacionadas con el pedido seleccionado y el nuevo estado. Luego, se vuelven a aplicar los filtros para asegurarse de que la lista de pedidos refleje el estado actual.
-  */
-
   cancelarCambio() {
     if (this.pedidoSeleccionado) {
-      this.pedidoSeleccionado.estado = this.estadoAnterior;
+      this.pedidoSeleccionado.estado = this.estadoAnterior; // Revierte cambio
     }
+
     this.mostrarConfirmacion = false;
     this.pedidoSeleccionado = null;
     this.nuevoEstadoSeleccionado = '';
     this.estadoAnterior = '';
+
     this.ngZone.run(() => this.cdr.detectChanges());
   }
 
-  /*
-  En este método se confirma el cambio de estado del pedido seleccionado. Se llama al servicio para actualizar el estado en el backend y, una vez actualizado, se refleja el cambio en la interfaz de usuario. Además, se oculta la ventana de confirmación y se limpian las variables relacionadas con el pedido seleccionado y el nuevo estado.
-  */
-
   confirmarCambio() {
     if (!this.pedidoSeleccionado) return;
+
     this.pedidoService.actualizarEstado(this.pedidoSeleccionado.id!, this.nuevoEstadoSeleccionado).subscribe({
       next: (actualizado) => {
         this.ngZone.run(() => {
-          this.pedidoSeleccionado!.estado = actualizado.estado;
+          this.pedidoSeleccionado!.estado = actualizado.estado; // Confirma cambio
           this.mostrarConfirmacion = false;
           this.pedidoSeleccionado = null;
           this.nuevoEstadoSeleccionado = '';
@@ -175,4 +166,9 @@ export class ConfigComponent implements OnInit {
       }
     });
   }
+
+  toggleDetalle(pedido: Pedido) {
+    this.pedidoDetalle = this.pedidoDetalle?.id === pedido.id ? null : pedido; // Abre/cierra detalle
+  }
+
 }

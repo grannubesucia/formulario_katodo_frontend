@@ -231,7 +231,6 @@ select {
   align-items: center;
 }
 
-
 .btn-primario {
   background: var(--orange);
   border: none;
@@ -603,4 +602,44 @@ input[type="checkbox"] {
 .carrusel-btn,
 .select-arrow {
   clip-path: polygon(10px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 10px);
+}
+
+.info-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  clip-path: polygon(8px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 8px);
+}
+
+.info-box summary {
+  cursor: pointer;
+  color: var(--orange);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-box summary::before {
+  content: '▸';
+  transition: transform 0.2s;
+  font-size: 0.75rem;
+}
+
+.info-box[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.info-box p {
+  margin-top: 10px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.info-box strong {
+  color: var(--text);
 }
