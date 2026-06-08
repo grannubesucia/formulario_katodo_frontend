@@ -25,7 +25,7 @@ export interface Pedido {
 })
 export class PedidoService {
 
-  private apiUrl = 'http://localhost:8080/api/pedidos'; // Endpoint base del backend
+  private apiUrl = 'https://formulariokatodobackend-production.up.railway.app/api/pedidos'; // Endpoint base del backend
 
   constructor(private http: HttpClient) { } // Inyección HTTP
 
