@@ -25,7 +25,7 @@ export interface Pedido {
 })
 export class PedidoService {
 
-  private apiUrl = 'https://formulariokatodobackend-production.up.railway.app/api/pedidos'; // Endpoint base del backend
+  private apiUrl = 'https://formulario-katodo-backend.onrender.com/api/pedidos'; // Endpoint base del backend
 
   constructor(private http: HttpClient) { } // Inyección HTTP
 
