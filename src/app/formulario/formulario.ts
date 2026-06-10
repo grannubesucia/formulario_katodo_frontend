@@ -191,20 +191,25 @@ export class FormularioComponent {
   }
 
   enviarPedido() {
+    this.enviando = true;
+    this.errorEnvio = false;
+
     const pedidoPayload = {
       ...this.datos,
-      materiales: JSON.stringify(this.datos.materiales), // Serializa materiales
-      materialesConfig: JSON.stringify(this.materialesConfig) // Serializa config
+      materiales: JSON.stringify(this.datos.materiales),
+      materialesConfig: JSON.stringify(this.materialesConfig)
     };
 
     this.pedidoService.guardarPedido(pedidoPayload).subscribe({
       next: (respuesta) => {
         console.log('Pedido guardado con id:', respuesta.id);
-        this.router.navigate(['/confirmacion']); // Redirige tras éxito
+        this.enviando = false;
+        this.router.navigate(['/confirmacion']);
       },
       error: (err) => {
         console.error('Error:', err);
-        this.errorEnvio = true; // Marca error
+        this.enviando = false;
+        this.errorEnvio = true;
       }
     });
   }
