@@ -202,12 +202,10 @@ export class FormularioComponent {
 
     this.pedidoService.guardarPedido(pedidoPayload).subscribe({
       next: (respuesta) => {
-        console.log('Pedido guardado con id:', respuesta.id);
         this.enviando = false;
         this.router.navigate(['/confirmacion']);
       },
       error: (err) => {
-        console.error('Error:', err);
         this.enviando = false;
         this.errorEnvio = true;
       }
